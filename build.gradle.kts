@@ -33,3 +33,13 @@ tasks.withType<KotlinCompile> {
 application {
     mainClass.set("MainKt")
 }
+
+tasks.withType<Jar> {
+    manifest.attributes["Main-Class"] = "com.cloudwatch.slackbot.AlarmApplication"
+    val dependencies = configurations
+        .runtimeClasspath
+        .get()
+        .map(::zipTree)
+    from(dependencies)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
