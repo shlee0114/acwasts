@@ -4,6 +4,8 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import java.net.HttpURLConnection
+import java.net.URL
 
 class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> {
 
@@ -14,6 +16,22 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
             getMessage(it) to getDataWithoutMessage(it)
         }
 
+        val message = "{text : \"${data.AlarmName} state is now ${data.NewStateValue}: ${data.NewStateReason}\"}"
+
+        val connection = (URL(Slack.HOOK_URL).openConnection() as HttpURLConnection)
+            .apply {
+                requestMethod = "POST"
+                doOutput = true
+                setRequestProperty("Content-Type", "application/json; utf-8")
+                outputStream
+                    .apply {
+                        write(message.toByteArray(charset = Charsets.UTF_8))
+                    }
+            }
+        connection.inputStream
+
+        println(message)
+
         val headers = hashMapOf<String, String>()
         headers["Access-Control-Allow-Origin"] = "*"
 
@@ -21,6 +39,7 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
         response["isBase64Encoded"] = true
         response["headers"] = headers
         response["statusCode"] = 200
+        response["body"] = message
 
         return response
     }
