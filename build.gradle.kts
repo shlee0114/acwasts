@@ -21,6 +21,8 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
     implementation("mysql:mysql-connector-java:8.0.28")
     implementation("org.mybatis:mybatis:3.5.9")
+    implementation("com.slack.api:slack-api-client:1.21.1")
+    implementation("org.slf4j:slf4j-simple:1.7.36")
     testImplementation(kotlin("test"))
 }
 

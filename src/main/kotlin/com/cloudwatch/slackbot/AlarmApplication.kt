@@ -12,10 +12,11 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
     private val jackson = jacksonObjectMapper()
 
     override fun handleRequest(input: Map<String, Any>, context: Context?): HashMap<String, Any> {
-        val (data, otherData) = input["Records"].toString().let {
-            getMessage(it) to getDataWithoutMessage(it)
-        }
+        val data = getMessage(input["Records"].toString())
         val (status, message) = jackson.writeValueAsString(GenerateMessage(data).message).sendMessage()
+
+        if (data.NewStateValue == AlarmStatus.ALARM)
+            DataBaseMessage().sendProcessList()
 
         println(message)
 
@@ -39,15 +40,6 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
                 substring(indexOf("Message=") + 8, indexOf("}}") + 2)
             }
         )
-
-    private fun getDataWithoutMessage(input: String): Map<String, String> =
-        input.run {
-            substring(2, indexOf("Message=")) + substring(indexOf("}}") + 3, length - 4)
-        }.let { nonJsonString ->
-            nonJsonString.split(", ").associate {
-                it.split("=")[0] to it.split("=")[1]
-            }
-        }
 
     private fun String.sendMessage(): Pair<Int, String> =
         try {

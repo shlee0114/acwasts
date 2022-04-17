@@ -23,4 +23,7 @@ data class ProcessList private constructor(
                 info = res.getString("Info")
             )
     }
+
+    override fun toString() =
+        "id : $id, user : $user, db : $db, command : $command, time : $time, state : $state, info : $info"
 }
