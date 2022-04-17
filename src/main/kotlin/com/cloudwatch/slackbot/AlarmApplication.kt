@@ -16,8 +16,7 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
             getMessage(it) to getDataWithoutMessage(it)
         }
 
-        val (status, message) =
-            sendMessage(message = "{text : \"${data.AlarmName} state is now ${data.NewStateValue}: ${data.NewStateReason}\"}")
+        val (status, message) = jackson.writeValueAsString(GenerateMessage(data).message).sendMessage()
 
         println(message)
 
@@ -51,19 +50,20 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
             }
         }
 
-    private fun sendMessage(message: String): Pair<Int, String> =
+    private fun String.sendMessage(): Pair<Int, String> =
         try {
-            (URL(Slack.HOOK_URL).openConnection() as HttpURLConnection)
+            val test = (URL(Slack.HOOK_URL).openConnection() as HttpURLConnection)
                 .apply {
                     requestMethod = "POST"
                     doOutput = true
                     setRequestProperty("Content-Type", "application/json; utf-8")
                     outputStream
                         .apply {
-                            write(message.toByteArray(charset = Charsets.UTF_8))
+                            write(toByteArray(charset = Charsets.UTF_8))
                         }
-                }.inputStream
-            200 to message
+                }
+            test.inputStream
+            200 to this
         } catch (e: Exception) {
             500 to (e.message ?: "")
         }
