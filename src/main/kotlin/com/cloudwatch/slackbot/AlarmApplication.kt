@@ -15,7 +15,6 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
         val (data, otherData) = input["Records"].toString().let {
             getMessage(it) to getDataWithoutMessage(it)
         }
-
         val (status, message) = jackson.writeValueAsString(GenerateMessage(data).message).sendMessage()
 
         println(message)
@@ -52,7 +51,7 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
 
     private fun String.sendMessage(): Pair<Int, String> =
         try {
-            val test = (URL(Slack.HOOK_URL).openConnection() as HttpURLConnection)
+            (URL(LambdaConfiguration.HOOK_URL).openConnection() as HttpURLConnection)
                 .apply {
                     requestMethod = "POST"
                     doOutput = true
@@ -61,8 +60,7 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
                         .apply {
                             write(toByteArray(charset = Charsets.UTF_8))
                         }
-                }
-            test.inputStream
+                }.inputStream
             200 to this
         } catch (e: Exception) {
             500 to (e.message ?: "")
