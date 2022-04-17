@@ -16,32 +16,23 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
             getMessage(it) to getDataWithoutMessage(it)
         }
 
-        val message = "{text : \"${data.AlarmName} state is now ${data.NewStateValue}: ${data.NewStateReason}\"}"
-
-        val connection = (URL(Slack.HOOK_URL).openConnection() as HttpURLConnection)
-            .apply {
-                requestMethod = "POST"
-                doOutput = true
-                setRequestProperty("Content-Type", "application/json; utf-8")
-                outputStream
-                    .apply {
-                        write(message.toByteArray(charset = Charsets.UTF_8))
-                    }
-            }
-        connection.inputStream
+        val (status, message) =
+            sendMessage(message = "{text : \"${data.AlarmName} state is now ${data.NewStateValue}: ${data.NewStateReason}\"}")
 
         println(message)
 
         val headers = hashMapOf<String, String>()
-        headers["Access-Control-Allow-Origin"] = "*"
+            .apply {
+                set("Access-Control-Allow-Origin", "*")
+            }
 
-        val response = hashMapOf<String, Any>()
-        response["isBase64Encoded"] = true
-        response["headers"] = headers
-        response["statusCode"] = 200
-        response["body"] = message
-
-        return response
+        return hashMapOf<String, Any>()
+            .apply {
+                set("isBase64Encoded", true)
+                set("headers", headers)
+                set("statusCode", status)
+                set("body", message)
+            }
     }
 
     private fun getMessage(input: String): CloudWatchEvent =
@@ -58,5 +49,22 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
             nonJsonString.split(", ").associate {
                 it.split("=")[0] to it.split("=")[1]
             }
+        }
+
+    private fun sendMessage(message: String): Pair<Int, String> =
+        try {
+            (URL(Slack.HOOK_URL).openConnection() as HttpURLConnection)
+                .apply {
+                    requestMethod = "POST"
+                    doOutput = true
+                    setRequestProperty("Content-Type", "application/json; utf-8")
+                    outputStream
+                        .apply {
+                            write(message.toByteArray(charset = Charsets.UTF_8))
+                        }
+                }.inputStream
+            200 to message
+        } catch (e: Exception) {
+            500 to (e.message ?: "")
         }
 }
