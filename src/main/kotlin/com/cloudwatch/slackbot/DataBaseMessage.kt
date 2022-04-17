@@ -18,7 +18,7 @@ class DataBaseMessage {
                     .apply {
                         isReadOnly = true
                     }.run {
-                        prepareStatement("show processlist")
+                        prepareStatement("select * from INFORMATION_SCHEMA.PROCESSLIST where COMMAND != 'Sleep'")
                             .executeQuery()
                             .let {
                                 while (it.next()) {

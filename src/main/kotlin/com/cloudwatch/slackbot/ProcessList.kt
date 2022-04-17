@@ -14,13 +14,13 @@ data class ProcessList private constructor(
     companion object {
         fun of(res: ResultSet) =
             ProcessList(
-                id = res.getString("Id"),
-                user = res.getString("User"),
-                db = res.getString("db"),
-                command = res.getString("Command"),
-                time = res.getString("Time"),
-                state = res.getString("State"),
-                info = res.getString("Info")
+                id = res.getString("ID"),
+                user = res.getString("USER"),
+                db = res.getString("DB"),
+                command = res.getString("COMMAND"),
+                time = res.getString("TIME"),
+                state = res.getString("STATE"),
+                info = res.getString("INFO")
             )
     }
 
