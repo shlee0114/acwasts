@@ -4,7 +4,7 @@ object LambdaConfiguration {
     val dbURL: String
     val user: String
     val password: String
-    val HOOK_URL: String
+    val hookURL: String
 
     init {
         System.getenv()
@@ -12,7 +12,7 @@ object LambdaConfiguration {
                 dbURL = get("dbURL") ?: ""
                 user = get("user") ?: ""
                 password = get("password") ?: ""
-                HOOK_URL = get("hookUrl") ?: ""
+                hookURL = get("hookURL") ?: ""
             }
     }
 }

@@ -51,7 +51,7 @@ class AlarmApplication : RequestHandler<Map<String, Any>, HashMap<String, Any>> 
 
     private fun String.sendMessage(): Pair<Int, String> =
         try {
-            (URL(LambdaConfiguration.HOOK_URL).openConnection() as HttpURLConnection)
+            (URL(LambdaConfiguration.hookURL).openConnection() as HttpURLConnection)
                 .apply {
                     requestMethod = "POST"
                     doOutput = true
