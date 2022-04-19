@@ -4,9 +4,9 @@ object LambdaConfiguration {
     val dbURL: String
     val user: String
     val password: String
-    val hookURL: String
     val slackBotToken: String
     val slackChannel: String
+    val rdsURL: String
 
     init {
         System.getenv()
@@ -14,9 +14,9 @@ object LambdaConfiguration {
                 dbURL = get("dbURL") ?: ""
                 user = get("user") ?: ""
                 password = get("password") ?: ""
-                hookURL = get("hookURL") ?: ""
                 slackBotToken = get("slackBotToken") ?: ""
                 slackChannel = get("slackChannel") ?: ""
+                rdsURL = get("rdsURL") ?: ""
             }
     }
 }
