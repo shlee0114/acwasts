@@ -8,7 +8,7 @@ import java.sql.DriverManager
 import java.time.LocalDateTime
 
 class Message(private val data: CloudWatchEvent) {
-    fun sendMessage() =
+    fun sendMessage(): Unit =
         Slack.getInstance()
             .methods(LambdaConfiguration.slackBotToken)
             .run {
@@ -30,14 +30,15 @@ class Message(private val data: CloudWatchEvent) {
                                     }
                             )
                         )
-                }
-
-                if (data.NewStateValue == AlarmStatus.ALARM) {
-                    filesUpload {
-                        it.channels(listOf(LambdaConfiguration.slackChannel))
-                            .filename("processList.txt")
-                            .filetype("txt")
-                            .fileData(getProcessList().toByteArray())
+                }.apply {
+                    if (data.NewStateValue == AlarmStatus.ALARM) {
+                        filesUpload {
+                            it.channels(listOf(LambdaConfiguration.slackChannel))
+                                .threadTs(ts)
+                                .filename("processList.txt")
+                                .filetype("txt")
+                                .fileData(getProcessList().toByteArray())
+                        }
                     }
                 }
             }
