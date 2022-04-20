@@ -92,23 +92,21 @@ class Message(private val data: CloudWatchEvent) {
     private fun getProcessList() =
         mutableListOf<ProcessList>()
             .let { processes ->
-
                 DriverManager.getConnection(
                     LambdaConfiguration.dbURL,
                     LambdaConfiguration.user,
                     LambdaConfiguration.password
-                )
-                    .apply {
-                        isReadOnly = true
-                    }.run {
-                        prepareStatement("select * from INFORMATION_SCHEMA.PROCESSLIST where COMMAND != 'Sleep'")
-                            .executeQuery()
-                            .let {
-                                while (it.next()) {
-                                    processes.add(ProcessList.of(it))
-                                }
+                ).apply {
+                    isReadOnly = true
+                }.use {
+                    it.prepareStatement(LambdaConfiguration.SQL)
+                        .executeQuery()
+                        .use { rs ->
+                            while (rs.next()) {
+                                processes.add(ProcessList(rs))
                             }
-                    }
+                        }
+                }
                 processes.joinToString("\n")
             }
 }

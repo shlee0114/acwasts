@@ -30,7 +30,7 @@ data class Trigger(
     val ComparisonOperator: String?,
     val Threshold: Double?,
     val TreatMissingData: String?,
-    val EvaluateLowSampleCountPercentile: String?
+    val EvaluateLowSampleCountPercentile: String?,
 )
 
 data class Dimension(

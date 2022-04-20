@@ -7,6 +7,7 @@ object LambdaConfiguration {
     val slackBotToken: String
     val slackChannel: String
     val rdsURL: String
+    val SQL: String
 
     init {
         System.getenv()
@@ -17,6 +18,7 @@ object LambdaConfiguration {
                 slackBotToken = get("slackBotToken") ?: ""
                 slackChannel = get("slackChannel") ?: ""
                 rdsURL = get("rdsURL") ?: ""
+                SQL = get("sql") ?: "show processlist"
             }
     }
 }
